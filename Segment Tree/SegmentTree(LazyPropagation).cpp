@@ -35,163 +35,126 @@ typedef double dl;
 const int inf = 2000000000;  //2e9
 const ll infLL = 9000000000000000000; //9e18
 
-const int mx = 2e5+123;
+const int mxan = 2e5+123;
+ll arr[mxan];
+struct Node{
+    ll cost, prop;
+}seg[mxan*4];
 
-ll arr[mx];
-//ll seg[4*mx];
-
-class SegmentTree
+void build(int node,int low,int high)
 {
-    vector<ll> seg,lazy;
-public:
-    SegmentTree(int n)
+    if (low==high)
     {
-        seg.resize(4*n+1);
-        lazy.resize(4*n+1);
+        seg[node].cost = arr[low];
+        return;
+    }
+    int mid = (low+high)/2;
+    build((2*node)+1,low,mid);
+    build((2*node)+2,mid+1,high);
+    seg[node].cost = seg[(2*node)+1].cost+seg[(2*node)+2].cost;
+}
+
+
+ll query(int node,int low,int high,int l,int r)
+{
+    if (seg[node].prop!=0)
+    {
+        seg[node].cost+=(high-low+1)*seg[node].prop;
+        if (low!=high)
+        {
+            seg[(2*node)+1].prop+=seg[node].prop;
+            seg[(2*node)+2].prop+=seg[node].prop;
+        }
+        seg[node].prop=0;
     }
 
-    void build(int node,int low,int high)
+    if (r<low || high<l) //no overlap
     {
-        if (low==high)
+        return 0;
+    } 
+    if (l<=low && r>=high) //complete overlap
+    {
+        return seg[node].cost;
+    } 
+    //partial overlap
+    int mid = (high+low)/2;
+    ll left = query((2*node)+1,low,mid,l,r);
+    ll right = query((2*node)+2,mid+1,high,l,r);
+    return left+right;
+
+}
+
+void update(int node,int low,int high,int l,int r,ll val)
+{
+    if (seg[node].prop!=0)
+    {
+        seg[node].cost+=(high-low+1)*seg[node].prop;
+
+        if (low!=high)
         {
-            seg[node] = arr[low];
-            return;
+            seg[(2*node)+1].prop += seg[node].prop;
+            seg[(2*node)+2].prop += seg[node].prop; 
         }
-
-        int mid = (low+high)/2;
-        build((2*node)+1,low,mid);
-        build((2*node)+2,mid+1,high);
-        seg[node] = seg[(2*node)+1]+seg[(2*node)+2];
-
+        seg[node].prop=0;
     }
 
-    void update(int node,int low,int high,int l,int r,ll val)
+    if (r<low || high<l)
     {
-        if (lazy[node]!=0)
+        return;
+    }
+    if (l<=low && high<=r)
+    {
+        seg[node].cost += (high-low+1)*val;
+        if (low!=high)
         {
-            seg[node]+=(high-low+1)*lazy[node];
+            seg[(2*node)+1].prop += val;
+            seg[(2*node)+2].prop += val;
+        }  
+        return;
+    }
+    int mid = (low+high)/2;
+    update((2*node)+1,low,mid,l,r,val);
+    update((2*node)+2,mid+1,high,l,r,val);
+    seg[node].cost=seg[(2*node)+1].cost+seg[(2*node)+2].cost;
+}
 
-            if (low!=high)
-            {
-                lazy[(2*node)+1] += lazy[node];
-                lazy[(2*node)+2] += lazy[node]; 
-            }
-            else
-            {
-                arr[low] = seg[node];
-            }
-            lazy[node]=0;
-        }
 
-        if (r<low || high<l)
+ll value(int node,int low,int high,int pos)
+{
+    if (seg[node].prop!=0)
+    {
+        seg[node].cost+=(high-low+1)*seg[node].prop;
+
+        if (low!=high)
         {
-            return;
+            seg[(2*node)+1].prop += seg[node].prop;
+            seg[(2*node)+2].prop += seg[node].prop; 
         }
-
-        if (l<=low && high<=r)
-        {
-            seg[node] += (high-low+1)*val;
-            if (low!=high)
-            {
-                lazy[(2*node)+1] += val;
-                lazy[(2*node)+2] += val;
-            }  
-            else
-            {
-                arr[low] = seg[node];
-            }
-            lazy[node]=0;
-            return;
-        }
-
-        int mid = (low+high)/2;
-        update((2*node)+1,low,mid,l,r,val);
-        update((2*node)+2,mid+1,high,l,r,val);
-        seg[node]=seg[(2*node)+1]+seg[(2*node)+2];
-
+        seg[node].prop=0;
     }
 
-    ll query(int node,int low,int high,int l,int r)
+    if (low==high)
     {
-        if (lazy[node]!=0)
-        {
-            seg[node]+=(high-low+1)*lazy[node];
-            if (low!=high)
-            {
-                lazy[(2*node)+1]+=lazy[node];
-                lazy[(2*node)+2]+=lazy[node];
-            }
-            else
-            {
-                arr[low]=seg[node];
-            }
-            lazy[node]=0;
-        }
-
-
-        if (r<low || high<l) //no overlap
-        {
-            return 0;
-        } 
-        else if (l<=low && r>=high) //complete overlap
-        {
-            return seg[node];
-        } 
-        else //partial overlap
-        {
-            int mid = (high+low)/2;
-            ll left = query((2*node)+1,low,mid,l,r);
-            ll right = query((2*node)+2,mid+1,high,l,r);
-            return left+right;
-        }
-
-
-    }
-
-
-    ll value(int node,int low,int high,int pos)
-    {
-        if (lazy[node]!=0)
-        {
-            seg[node]+=(high-low+1)*lazy[node];
-
-            if (low!=high)
-            {
-                lazy[(2*node)+1] += lazy[node];
-                lazy[(2*node)+2] += lazy[node]; 
-            }
-            else
-            {
-                arr[low] = seg[node];
-            }
-            lazy[node]=0;
-        }
-
-
-        if (low==high)
-        {
-            return arr[pos];
-        }
-
-        int mid=(low+high)/2;
-
-        if (pos<=mid)
-        {
-            return value((2*node)+1,low,mid,pos);
-        }
-        else
-        {
-            return value((2*node)+2,mid+1,high,pos);
-        }
+        return seg[node].cost;
     }
     
-};
+    int mid=(low+high)/2;
+    if (pos<=mid)
+    {
+        return value((2*node)+1,low,mid,pos);
+    }
+    else
+    {
+        return value((2*node)+2,mid+1,high,pos);
+    }
+}
 
 
-int main()
+void solve(int kk)
 {
-    optimize();
+    memset(seg,0,sizeof(seg));
     memset(arr,0,sizeof(arr));
+
     int n,q;
     cin>>n>>q;
 
@@ -200,8 +163,7 @@ int main()
         cin>>arr[i];
     }
 
-    SegmentTree sg(n);
-    sg.build(0,0,n-1);
+    build(0,0,n-1);
 
     while(q--)
     {
@@ -213,16 +175,30 @@ int main()
             int l,r;
             ll val;
             cin>>l>>r>>val;
-            sg.update(0,0,n-1,l-1,r-1,val);
+            update(0,0,n-1,l-1,r-1,val);
         }
         else
         {
             int pos;
             cin>>pos;
-            cout<<sg.value(0,0,n-1,pos-1)<<"\n";
+            cout<<value(0,0,n-1,pos-1)<<"\n";
         }
-
     }
+}
+
+
+int main()
+{
+    optimize();
+
+    // int t;
+    // cin>>t;
+
+    // for (int kk = 1; kk <= t; ++kk)
+    // {
+    //     solve(kk);
+    // }
+    solve(0);
 
     return 0;
 }

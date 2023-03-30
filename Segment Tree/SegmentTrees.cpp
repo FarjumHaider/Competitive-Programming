@@ -35,110 +35,72 @@ typedef double dl;
 const int inf = 2000000000;  //2e9
 const ll infLL = 9000000000000000000; //9e18
 
-const int mx = 1e2+123;
+const int mxan = 2e5+123;
+ll arr[mxan];
+ll seg[4*mxan];
 
-//ll arr[mx];
-//ll seg[4*mx];
-
-class SegmentTree
+void build(int node,int low,int high)
 {
-    vector<ll> seg;
-    public:
-        SegmentTree(int n)
-        {
-            seg.resize(4*n+1);
-        }
-
-    void build(int node,int low,int high,ll arr[])
+    if (low == high)
     {
-        if (low == high)
-        {
-            seg[node] = arr[low];
-            return;
-        }
-
-        int mid = (low+high)/2;
-        build((2*node)+1,low,mid,arr);
-        build((2*node)+2,mid+1,high,arr);
-
-        seg[node] = min(seg[(2*node)+1],seg[(2*node)+2]);
+        seg[node] = arr[low];
+        return;
     }
+    int mid = (low+high)/2;
+    build((2*node)+1,low,mid);
+    build((2*node)+2,mid+1,high);
+    seg[node] = min(seg[(2*node)+1],seg[(2*node)+2]);
+}
 
-    ll query(int node,int low,int high,int l,int r)
+ll query(int node,int low,int high,int l,int r)
+{
+    if (low>r || high<l)
     {
-        if (low>r || high<l)
-        {
-            return INT_MAX;
-        }
-        if (low>=l && r>=high)
-        {
-            return seg[node];
-        }
-        
-        int mid = (low+high)/2;
-        ll left = query((2*node)+1,low,mid,l,r);
-        ll right = query((2*node)+2,mid+1,high,l,r);
-
-        return min(left,right);
+        return INT_MAX;
     }
-
-    void update(int node,int low,int high,int pos,ll val)
+    if (low>=l && r>=high)
     {
-        if (low == high)
-        {
-            seg[node] = val;
-            return;
-        }
-
-        int mid = (low+high)/2;
-        if (mid>=pos)
-        {
-            update((2*node)+1,low,mid,pos,val);
-        }
-        else
-        {
-            update((2*node)+2,mid+1,high,pos,val);
-        }
-
-        seg[node] = min(seg[(2*node)+1],seg[(2*node)+2]);
-
+        return seg[node];
     }
-    
-};
+    int mid = (low+high)/2;
+    ll left = query((2*node)+1,low,mid,l,r);
+    ll right = query((2*node)+2,mid+1,high,l,r);
+    return min(left,right);
+}
 
+void update(int node,int low,int high,int pos,ll val)
+{
+    if (high<pos || pos<low)
+    {
+        return;
+    }
+    if (pos<=low && high<=pos)
+    {
+        seg[node] = val;
+        return;
+    }
+    int mid = (low+high)/2;
+    update((2*node)+1,low,mid,pos,val);
+    update((2*node)+2,mid+1,high,pos,val);
+    seg[node] = min(seg[(2*node)+1],seg[(2*node)+2]);
 
-int main()
+}
+
+void solve(int kk)
 {
     optimize();
-    // memset(seg,0,sizeof(seg));
-    // memset(arr,0,sizeof(arr));
+    memset(seg,0,sizeof(seg));
+    memset(arr,0,sizeof(arr));
 
-    int n1;
-    cin>>n1;
-    ll arr1[n1];
+    int n,q;
+    cin>>n>>q;
 
-    for (int i = 0; i < n1; ++i)
+    for (int i = 0; i < n; ++i)
     {
-        cin>>arr1[i];
+        cin>>arr[i];
     }
 
-    SegmentTree sg1(n1);
-    sg1.build(0,0,n1-1,arr1);
-
-    int n2;
-    cin>>n2;
-    ll arr2[n2];
-
-    for (int i = 0; i < n2; ++i)
-    {
-        cin>>arr2[i];
-    }
-
-    SegmentTree sg2(n2);
-    sg2.build(0,0,n2-1,arr2);
-
-    int q;
-    cin>>q;
+    build(0,0,n-1);
 
     while(q--)
     {
@@ -147,32 +109,38 @@ int main()
 
         if (type==1)
         {
-            int l1,r1,l2,r2;
-            cin>>l1>>r1>>l2>>r2;
-            ll min1 = sg1.query(0,0,n1-1,l1,r1);
-            ll min2 = sg2.query(0,0,n2-1,l2,r2);
-            cout<<min1<<" "<<min2<<"\n";
-            cout<<min(min1,min2)<<"\n";
+            int pos;
+            ll val;
+            cin>>pos>>val;
+            update(0,0,n-1,pos-1,val);
+            arr[pos] = val;
         }
         else
         {
-            int arrNo,pos;
-            ll val;
-            cin>>arrNo>>pos>>val;
-            if (arrNo==1)
-            {
-                sg1.update(0,0,n1-1,pos,val);
-                arr1[pos] = val;  
-            }
-            else
-            {
-                sg2.update(0,0,n2-1,pos,val);
-                arr2[pos] = val;  
-            }       
+            int l,r;
+            cin>>l>>r;
+            cout<<query(0,0,n-1,l-1,r-1)<<"\n";        
         }
 
     }
-  
+}
+
+
+int main()
+{
+    optimize();
+
+    // int t;
+    // cin>>t;
+
+    // for (int kk = 1; kk <= t; ++kk)
+    // {
+    //     solve(kk);
+    // }
+    solve(0);
+
+
+
     return 0;
 }
 
