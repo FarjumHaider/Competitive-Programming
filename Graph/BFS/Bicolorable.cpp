@@ -39,6 +39,7 @@ const int mxan = 2e2+123;
 vector<int> adj[mxan];
 bool vis[mxan];
 int col[mxan];
+int n;
 
 bool bfs(int s)
 {
@@ -72,14 +73,27 @@ bool bfs(int s)
     return true;
 }
 
+void clean()
+{
+    for (int i = 0; i <= n; ++i)
+    {
+        adj[i].clear();
+        vis[i]=0;
+        col[i]=0;
+    }  
+}
+
+
 int main()
 {
     optimize();
-    int n;
+    
     while(cin>>n)
     {
-        memset(vis,0,sizeof(vis));
-        memset(adj,0,sizeof(adj));
+        // memset(vis,0,sizeof(vis));
+        // memset(adj,0,sizeof(adj));
+
+        clean();
 
         if(n==0) exit(0);
 

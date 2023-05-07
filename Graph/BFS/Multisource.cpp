@@ -99,6 +99,20 @@ void bfsJ(int a,int b)
 }
 
 
+void clean()
+{
+    for (int i = 0; i <= n; ++i)
+    {
+        for (int j = 0; j <= m; ++j)
+        {
+            adj[i][j]='\0';
+            lvlF[i][j]=-1;
+            lvlJ[i][j]=-1;
+        }
+    }  
+    mn=INT_MAX;
+}
+
 int main()
 {
     optimize();
@@ -107,13 +121,15 @@ int main()
     cin>> t;
     for (int i = 1; i <= t; ++i)
     {
-        memset(lvlF,-1,sizeof(lvlF));
-        memset(lvlJ,-1,sizeof(lvlJ));
-        memset(adj,'\0',sizeof(adj));
-        mn=INT_MAX;
+        // memset(lvlF,-1,sizeof(lvlF));
+        // memset(lvlJ,-1,sizeof(lvlJ));
+        // memset(adj,'\0',sizeof(adj));
+        //mn=INT_MAX;
 
         int x,y;
         cin>>n>>m;
+        
+        clean();
 
         for (int i = 1; i <= n; ++i)
         {

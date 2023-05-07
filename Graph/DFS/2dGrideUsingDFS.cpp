@@ -58,6 +58,17 @@ void dfs(int x,int y)
     }
 }
 
+void clean()
+{
+    for (int i = 0; i <= n; ++i)
+    {
+        for (int j = 0; j <= m; ++j)
+        {
+            adj[i][j]='\0';
+            vis[i][j]=0;
+        }
+    }  
+}
 
 int main()
 {
@@ -66,12 +77,14 @@ int main()
     cin>> t;
     for (int kk = 1; kk <= t; ++kk)
     {
-        memset(vis,0,sizeof(vis));
-        memset(adj,'\0',sizeof(adj));
+        // memset(vis,0,sizeof(vis));
+        // memset(adj,'\0',sizeof(adj));
         cnt=1;
 
         int x,y;
         cin>>m>>n;
+        
+        clean();
 
         for (int i = 1; i <= n; ++i)
         {

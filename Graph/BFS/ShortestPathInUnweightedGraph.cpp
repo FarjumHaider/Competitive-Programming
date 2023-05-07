@@ -38,6 +38,7 @@ typedef double dl;
 const int mxan = 1e5+123;
 int lvl[mxan];
 vector<int> adj[mxan];
+int n,m;
 
 void bfs(int s)
 {
@@ -64,6 +65,15 @@ void bfs(int s)
 
 }
 
+void clean()
+{
+    for (int i = 0; i <= n; ++i)
+    {
+        adj[i].clear();
+        lvl[i]=0;
+    }  
+}
+
 int main()
 {
     optimize();
@@ -72,11 +82,8 @@ int main()
     cin>> t;
     for (int i = 1; i <= t; ++i)
     {
-        memset(lvl,0,sizeof(lvl));
-        memset(adj,0,sizeof(adj));
-
-        int n,m;
         cin>>n>>m;
+        clean();
 
         for (int i = 1; i <= m; ++i)
         {

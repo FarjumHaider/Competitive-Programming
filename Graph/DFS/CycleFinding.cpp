@@ -63,16 +63,15 @@ int main()
 {
     optimize();
 
-    for (int i = 0; i <= mxan; ++i)
-    {
-        adj[i].clear();
-        vis[i]=0;
-        clr[i]=0;
-    }
-
     int n,m;
     cin>>n>>m;
 
+    for (int i = 0; i <= n; ++i)
+    {
+        adj[i].clear();
+        vis[i]=0;
+    }
+    
     for (int i = 0; i < m; ++i)
     {
         int u,v;
