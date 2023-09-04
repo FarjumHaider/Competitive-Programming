@@ -1,6 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+typedef unsigned long long int llu;
 typedef long long int ll;
 typedef vector<int> vi;
 typedef vector<ll> vl;
@@ -13,7 +14,7 @@ typedef vector<pii> vpii;
 typedef vector<pll> vpll;
 typedef double dl;
 
-
+#define MOD 1000000007
 #define YES cout<<"YES"<<"\n";
 #define Yes cout<<"Yes"<<"\n";
 #define NO cout<<"NO"<<"\n";
@@ -31,101 +32,96 @@ typedef double dl;
 #define optimize() ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
 #define fraction() cout.unsetf(ios::floatfield);cout.precision(10);cout.setf(ios::fixed,ios::floatfield);
 
-const int mx = 1e4+123;
-int lvl[mx];
-vector<int> adj[mx];
-int subTree[mx];
-int parent[mx];
+int const mxan=1e5+123;
+int check[mxan];
+vector<int> adj[mxan];
+int parent[mxan];
 
-void dfs(int v,int p)
+void dfs(int u,int p)
 {
-    for(int u:adj[v])
+    parent[u]=p;
+    for(int v:adj[u])
     {
-        if(u!=p)
-        {
-            dfs(u,v);
-            parent[u] = v;
-            //subTree[v]+=subTree[u];
-        }
+        if(v!=p) dfs(v,u);
     }
 }
 
-vector<int> path(int x)
+
+vector<int> path(int u)
 {
-    //cout<<parent[x]<<" ***\n";
     vector<int> ans;
-    ans.pb(x);
-    while(parent[x]!=-1)
+    while(u!=-1)
     {
-        x = parent[x];
-        ans.pb(x);
+        ans.push_back(u);
+        u = parent[u];
     }
-    reverse(all(ans));
+    reverse(ans.begin(),ans.end());
     return ans;
 }
 
-int main()
+void solve()
 {
-    optimize();
-    //memset(subTree,1,sizeof(subTree));
-    //memset(adj,0,sizeof(adj));
-
-    for (int i = 0; i < mx; ++i) subTree[i] = 1;
-
-    int n,m;
+    int n;
     cin>>n;
 
     for (int i = 0; i < n-1; ++i)
     {
         int u,v;
         cin>>u>>v;
-
         adj[u].pb(v);
         adj[v].pb(u);
     }
 
-
-    parent[1]=-1;
     dfs(1,-1);
 
     int a,b;
     cin>>a>>b;
 
-    vector<int> aa = path(a);
-    vector<int> bb = path(b);
+    vector<int> p1,p2;
+    p1 = path(a);
+    p2 = path(b);
 
-    int sz = min(aa.size(),bb.size());
-
-    int lca=0;
-    while(aa[lca]==bb[lca])
+    int mn_sz = min(p1.size(),p1.size());
+    int lca;
+    for (int i = 0; i < mn_sz; ++i)
     {
-        lca++;
+        if (p1[i]==p2[i]) lca = p1[i];
+        else break;
     }
 
-    cout<<aa[--lca]<<"\n";
+    cout<<lca<<"\n";
+}
 
-    // for (int u:aa)
+
+
+int main()
+{
+    optimize();
+
+    // int t;
+    // cin>>t;
+
+    // while(t--)
     // {
-    //     cout<<u<<" ";
+    //     solve();
     // }
-    // endl
+    solve();
 
-    // for (int u:bb)
-    // {
-    //     cout<<u<<" ";
-    // }
 
-    // endl
-
-    // parent[1]=-1;
-    // for (int i = 1; i <= n; ++i)
-    // {
-    //     cout<<i<<" "<<parent[i]<<" **\n";
-    // }
-
-    // int a;
-    // cin>>a;
-    // cout<<subTree[a]<<"\n";
 
     return 0;
 }
+
+// 13
+// 1 2
+// 1 3
+// 1 13
+// 2 5
+// 5 6
+// 5 7
+// 5 8
+// 8 12
+// 3 4
+// 4 9
+// 4 10
+// 10 11
