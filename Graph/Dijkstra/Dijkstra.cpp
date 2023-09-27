@@ -62,9 +62,9 @@ void dijkstra(int s)
 
         for(auto v:adj[u])
         {
-            if(dis[v.ff]>dis[u]+v.ss)
+            if(dis[v.ff]>w+v.ss)
             {
-                dis[v.ff]=dis[u]+v.ss;
+                dis[v.ff]=w+v.ss;
                 pq.push({dis[v.ff],v.ff});
             }
         } 
