@@ -77,106 +77,33 @@ void build(int node,int l,int r)
 }
 
 
-vector<int> query(int node,int l,int r,int low,int high,int p,int q)
+ll query(int node,int l,int r,int low,int high,int val)
 {
-    if(r<low || high<l) return {0,-1,-1};
-
+    if(r<low || high<l) return 0;
     if(low<=l && r<=high) 
     {
         // int ind = upper_bound(seg[node].begin(),seg[node].end(),val)-seg[node].begin();
         // return seg[node].size()-ind;
-        int l1=0,r1=seg[node].size()-1,x=-1,y=-1;
+        int l1=0,r1=seg[node].size()-1,ans=seg[node].size();
         while(l1<=r1)
         {
             int m = (l1+r1)/2;
-
-            if (seg[node][m]>=p)
+            if (seg[node][m]<=val)
             {
-                x=m;
-                r1=m-1;
+                l1 = m+1;
             }
             else
             {
-                l1=m+1;
+                ans=m;
+                r1 = m-1;
             }
         }
-
-        l1=0;
-        r1=seg[node].size()-1;
-        while(l1<=r1)
-        {
-            int m = (l1+r1)/2;
-
-            if (seg[node][m]<=q)
-            {
-                y=m;
-                l1=m+1;
-                
-            }
-            else
-            {
-                r1=m-1;
-            }
-        }
-
-        vector<int> v;
-        if (x==-1 || y==-1)
-        {
-            v.pb(0); 
-            v.pb(-1); 
-            v.pb(-1);  
-        }
-        else
-        {
-            v.pb(y-x+1);
-            v.pb(seg[node][x]);
-            v.pb(seg[node][y]);
-        }
-        return v;
-
+        return seg[node].size()-ans;
     }
     int mid = (l+r)/2;
-    vector<int> left = query(2*node+1,l,mid,low,high,p,q);
-    vector<int> right = query(2*node+2,mid+1,r,low,high,p,q);
-
-    int x=0,y=-1,z=-1;
-    if (left[0]!=0)
-    {
-        x+=left[0];
-        y = left[1];
-        z = left[2];
-    }
-
-    if (right[0]!=0)
-    {
-        x+=right[0];
-        if(right[1]!=-1)
-        {
-            y = min(y,right[1]);
-        }
-        z = max(z,right[2]);
-    }
-
-    return {x,y,z};
-
-    // if (left[0]!=0 && right[0]!=0)
-    // {
-    //     int tot = left[0]+right[0];
-    //     vector<int> v;
-    //     v.pb(tot);
-    //     v.pb(left[1]);
-    //     v.pb(right[2]);
-    //     return v;
-        
-    // }
-    // else if (right[0]==0)
-    // {
-    //     return left;
-    // }
-    // else
-    // {
-    //     return right;
-    // }
+    ll left = query(2*node+1,l,mid,low,high,val);
+    ll right = query(2*node+2,mid+1,r,low,high,val);
+    return left+right;
 }
 
 
@@ -184,8 +111,8 @@ void solve(int kk)
 {
     memset(seg,0,sizeof(seg));
     memset(arr,0,sizeof(arr));
-    int n,q;
-    cin>>n>>q;
+    int n;
+    cin>>n;
 
     for (int i = 0; i < n; ++i)
     {
@@ -194,14 +121,14 @@ void solve(int kk)
 
     build(0,0,n-1);
 
+    int q;
+    cin>>q;
 
     while(q--)
     {
-        int l,r,x,y;
-        cin>>l>>r>>x>>y;
-        vector<int> v = query(0,0,n-1,l-1,r-1,x,y);
-        if(v[0]==0) v[1]=v[2]=-1;
-        cout<<v[0]<<" "<<v[1]<<" "<<v[2]<<"\n";
+        int l,r,val;
+        cin>>l>>r>>val;
+        cout<<query(0,0,n-1,l-1,r-1,val)<<"\n";
     }
 }
 
@@ -224,16 +151,3 @@ int main()
 
     return 0;
 }
-
-//elements greater than k in the subsequence 
-// input:
-// 5
-// 5 1 2 3 4
-// 3
-// 2 4 1
-// 4 4 4
-// 1 5 2
-// Output
-// 2
-// 0
-// 3
