@@ -1,5 +1,5 @@
 /*
-https://www.hackerearth.com/problem/algorithm/connected-components-in-a-graph/
+https://cses.fi/problemset/task/1669
 */
 #include<bits/stdc++.h>
 using namespace std;
